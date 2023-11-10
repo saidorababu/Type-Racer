@@ -8,7 +8,6 @@
 .homePage{
     display: flex;
     flex-direction: column;
-    background-image: url("../../assets/bg14.jpg");
 }
 
 .navbar{

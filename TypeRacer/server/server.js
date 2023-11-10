@@ -1,32 +1,92 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const dotenv = require("dotenv");
+import express from 'express'
+import cors from 'cors'
+import bcrypt from 'bcrypt'
+import bodyParser from 'body-parser'
+import dotenv from 'dotenv'
+import jwt from 'jsonwebtoken'
+import mysql from 'mysql'
+import multer from 'multer'
+import path from 'path'
 
-dotenv.config();
+dotenv.config()
 
-const app = express();
+const app = express()
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({
+    extended:true
+}))
+app.use(cors({
+    origin:["http://localhost:3000"],
+    credentials:true
+}))
 
-app.use(express.json());
-app.use(cors());
+const PORT = process.env.PORT || 4000
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((error) => {
-    console.log(error.message);
-  });
+app.listen(PORT,()=>{
+    console.log("App is Running on Port 4000");
+})
 
-// Define the models
-const Word = mongoose.model("Word", { word: String });
-const Score = mongoose.model("Score", { score: Number, wpm: Number });
+const db = mysql.createConnection({
+    host:"localhost",
+    user:"root",
+    port:3307,
+    database:"cloud management database"
+})
+console.log("12");
+db.connect((err)=>{
+    if(err){
+        console.log("Error in connecting to database")
+        console.error(err)
+        return;
+    }
+    console.log("Connected to database with id as "+db.threadId );
+})
 
+// register a user
+app.post('/signup', (req, res)=>{
+    const {userData} = req.body;
+    const {username, email, password, dateofbirth, place} = userData;
+    bcrypt.hash(password,10,(err,hash)=>{
+        if(err){
+            res.status(500).json({error:"error in hashing the password!"});
+        }else{
+            const id = 0
+            const sqlQuery = 'INSERT into users (username, email, password,dateofbirth,place) values (?,?,?,?,?);';
+            db.query(sqlQuery,[username,email,hash,dateofbirth,place],(err,result)=>{
+                if(err){
+                    res.status(500).json({error:"error in registering the user"});
+                }else{
+                    res.status(200).json({data:"successfully registered",user:username});
+                }
+            })
+        }
+    }) 
+})
+
+//Authentication
+app.post('/login',async (req,res)=>{
+    const {email,password} = req.body;
+    const sqlQuery = "Select * from users where email = ?";
+    db.query(sqlQuery,[email,password],async (err,results)=>{
+        if(err){
+            res.status(500).json({error:"Error retrieving user"});
+        }else{
+            if(results.length>0){
+                const user = results[0];
+                bcrypt.compare(password,user.password,(err,match)=>{
+                    if(err){
+                        res.status(401).json({error:"Authentication Failed"});
+                    }else{
+                        const token = jwt.sign({userId : user.id}, 'my_secret_key',{expiresIn:'2h'});
+                        res.status(200).json({token,user});
+                    }
+                })
+            }else{
+                res.status(401).json({error:"user not found"});
+            }
+        }
+    });
+});
 // Define the routes
 app.get("/api/words", async (req, res) => {
   // Get 10 random words from the database
@@ -59,10 +119,4 @@ app.post("/api/scores", async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-});
-
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server started at port ${PORT}`);
 });
