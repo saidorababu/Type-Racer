@@ -1,0 +1,44 @@
+*{
+    box-sizing: border-box;
+    padding: 0px;
+    margin: 0px;
+}
+.words {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 20px;
+}
+
+.words span {
+  margin: 5px;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.words span.correct {
+  background-color: green;
+  color: white;
+}
+
+.words span.current {
+  background-color: yellow;
+}
+
+input {
+  width: 80%;
+  margin: 20px;
+  padding: 10px;
+  font-size: 20px;
+  border: 2px solid black;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px;
+}
+
+.stats p {
+  font-size: 20px;
+  font-weight: bold;
+}
