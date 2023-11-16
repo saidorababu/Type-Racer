@@ -11,6 +11,7 @@ const initialState = {
     gender:'',
     place:''
 }
+
 function SignUp(){
     const [userData, setUserData] = useState(initialState);
     const [formErrors,setFormErrors] =useState({errorUserName:'',errorEmail:'',errorPassword:'',errorDob:'',errorGender:'',errorPlace:''});
@@ -120,7 +121,7 @@ function SignUp(){
             <form className="signUpForm" onSubmit={handleFormSubmission}>
               <div className="inputContainer">
                 <label className="Inputlabel" htmlFor="UsernameInput">username</label>
-                <input  type = "text" className="Input" id ="UsernameInput" placeholder="Enter email..." onChange={handleUserNameChange} />
+                <input  type = "text" className="Input" id ="UsernameInput" placeholder="Enter username..." onChange={handleUserNameChange} />
                 <p className="required">{formErrors.errorUserName}</p>
               </div>
               <div className="inputContainer">

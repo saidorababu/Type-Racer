@@ -22,6 +22,7 @@ function Home({username,email,handleLogout}){
     const [socket, setSocket] = useState(null);
     const [room, setRoom] = useState(null);
     const [isjoined, setIsJoined] = useState(false);
+    const [words, setWords] = useState(null); 
 
 useEffect(() => {
     // Connect to Socket.io server if not already connected
@@ -29,26 +30,51 @@ useEffect(() => {
         const newSocket = io("http://localhost:4000");
         setSocket(newSocket);
     }
-
+    ///////////////////
+    if(socket){
+        socket.on("updateTypingData",(words) => {
+            console.log(123);
+            console.log(words);
+            setWords(words);
+        });
+    }
+    //////////////////
     return () => {};
-}, [username, room, socket]);
-
+}, [username, room, socket,words]);
+    
     const joinRoom = (room) => {
         setRoom(room);
         socket.emit("joinRoom", room);
+        socket.on("updateTypingData",(words1) => {
+            console.log(123);
+            console.log(words1);
+            setWords(words1);
+        });
+        
     };
-
+    
     const handleJoinRoom = () => {
-        
         const room = parseInt(prompt("Enter room ID"));
-        setRoom(room);
-        
-        // const room = Math.floor(Math.random() * 1000000);
-        
         joinRoom(room);
         setIsJoined(true);
     };
-
+    const handleCreateRoom = () => {
+        const room = parseInt(Math.floor(Math.random() * 1000000));
+        joinRoom(room);
+        setRoom(room);
+        setIsJoined(true);
+        if(!words){
+            axios.get("http://localhost:4000/api/words")
+            .then((response) => {
+                let words = response.data.data.content.split(" ");
+                socket.emit("typingData",{words:words,room:room});
+                // setWords(words);
+            }).catch((error) => {
+                setError(error.message);
+            });
+        }
+        
+    }
 
     return (
         <div className="homePage">
@@ -67,16 +93,23 @@ useEffect(() => {
                         <button className="profileButton"  onClick={redirectLoadProfilePage}>
                             <img className="profileImg" alt ="profile-img" src="https://imgs.search.brave.com/xkauigvFo8pS5F0fV-ciVGwBiXeWqK97dhxLMWVD4mY/rs:fit:500:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzA0LzgzLzkwLzk1/LzM2MF9GXzQ4Mzkw/OTU2M19CdXB4MGsx/TnFkejJ0WFBzNzhz/ZW1IM0lvR0VqZWhn/Ri5qcGc"/>
                         </button>
+                        <p className="username">{username}</p>
                     </div>
                     <div className="logoutbtnContainer">
                         <button className="logout-btn" onClick={redirectToLoginPage}>Log out</button>
                     </div>
-                    <div className="joinRoomContainer">
-                        <button className="joinRoom-btn" onClick={handleJoinRoom}>Join Race</button>
-                    </div>
                 </div>
             </div>
-            {isjoined && (<TypingTestPage username={username} email={email} socket={socket} room = {room} />)}
+            {!isjoined && <div className="roomContainer">
+                <div className="joinRoomContainer">
+                    <button className="joinRoom-btn" onClick={handleCreateRoom}>Create Race</button>
+                </div>
+                <div className="joinRoomContainer">
+                    <button className="joinRoom-btn" onClick={handleJoinRoom}>Join Race</button>
+                </div>
+            </div>}
+            
+            {isjoined && (<TypingTestPage username={username} email={email} socket={socket} words = {words} room = {room} />)}
         </div>
 
     );

@@ -87,7 +87,7 @@ function Login(props){
         <div className="loginPage">
           <div className="loginContainer">
             <div className="loginHeading">
-              DBC Cloud
+              TypeRacer
             </div>
             <form className="loginForm" onSubmit={handleFormSubmission}>
               <div className="inputContainer">
@@ -102,7 +102,7 @@ function Login(props){
               </div>
               <button className="loginButton" type="submit">Login</button>
               <p className="orText">Or</p>
-              <button className="signUpButton" type="button" onClick={redirectToSignUpPage} >Create a DBC Account</button>
+              <button className="signUpButton" type="button" onClick={redirectToSignUpPage} >Create a Type Racer Account</button>
             </form>
           </div>
         </div>

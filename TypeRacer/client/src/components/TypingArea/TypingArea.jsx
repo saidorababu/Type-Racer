@@ -83,7 +83,7 @@ function TypingArea({ words , setProgress}) {
         disabled={finished}
       />
       <div className="stats">
-        <p>WPM: {Math.round((index / timer) * 60)}</p>
+        <p>WPM: {!(Math.round((index / timer) * 60))?0:Math.round((index/timer))}</p>
       </div>
     </div>
   );

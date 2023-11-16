@@ -43,7 +43,7 @@ function TypingTestPage({username,email,socket,room}){
                     "Content-Type": "application/json",
                     "accept": "application/json",
                 },  
-                body:JSON.stringify({progress:progress,email:email,room:room})
+                body:JSON.stringify({progress:progress,username:username,email:email,room:room})
             }
             const response = await fetch(`http://localhost:4000/api/progress`, options);
             const data = await response.json();
@@ -51,11 +51,11 @@ function TypingTestPage({username,email,socket,room}){
         }
         progressUpdate();
 
-        // socket.on("updateProgress", async (allProgress) => {
-        //     setAllProgress(allProgress);
-        // });
+        socket.on("updateProgress", async (allProgress) => {
+            setAllProgress(allProgress);
+        });
 
-        // socket.emit("progressUpdate", progress,email,room);
+        socket.emit("progressUpdate", progress,email,room);
 
         const fetchProgress = async () => {
             const response = await fetch(`http://localhost:4000/api/progress/${room}`);
@@ -65,12 +65,11 @@ function TypingTestPage({username,email,socket,room}){
             if (Array.isArray(data)) {
                 const progressData = data.map((item) => {
                     return {
-                        email: item.username,
+                        username: item.username,
                         progress: item.progress,
                     };
                 });
                 setAllProgress(progressData);
-
             }
         };
         fetchProgress();
@@ -87,17 +86,20 @@ function TypingTestPage({username,email,socket,room}){
 
     return (
         <div className="typingTestPage">
-            <h1>Online Type Racer</h1> {loading && <p>Loading…</p>} {error && <p>{error}</p>} 
-            <h1>Race room:{room}</h1>
+            <div className="headingContainer">
+                <h1>Online Type Racer</h1>
+                <h1>Race room:{room}</h1>
+            </div>
+            
             {words && <TypingArea words={words} setProgress={setProgress} setAllProgress={setAllProgress} />}
            
                 {(<div className="progress-bar">
                     {allProgress.map((item) => {
                         return ( 
-                                <>
-                                    <div className="progress" style={{width: `${progress}%`}}>{item.progress}%</div>
+                                <div className="progresscontainer">
+                                    <div className="progress" style={{width: `${item.progress}%`}}>{item.progress}%</div>
                                     <p>{item.username}</p>
-                                </>
+                                </div>
                             );
                     })}
 

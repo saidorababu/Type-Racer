@@ -10,6 +10,9 @@ import path from 'path'
 
 import { Server } from 'socket.io'
 
+// import WebSocket from "ws";
+// const wss = new WebSocket.Server({ port: 8080 });
+
 dotenv.config()
 
 const app = express()
@@ -17,10 +20,13 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
     extended:true
 }))
+
 app.use(cors({
-    origin:["http://localhost:3000"],
+    origin:["http://localhost:3000","http://10.2.64.224:3000","http://10.2.65.52:3000",],
     credentials:true
 }))
+
+
 
 const PORT = process.env.PORT || 4000
 
@@ -98,7 +104,7 @@ app.post('/login',async (req,res)=>{
 });
 // Define the routes
 app.get("/api/words", async (req, res) => {
-    const query = "select content from texts order by rand() limit 10";
+    const query = "select content from texts where text_id = 2 limit 10";
     db.query(query,(err,results)=>{
         if(err){
             res.status(500).json({error:"Error retrieving words"});
@@ -140,14 +146,16 @@ io.on("connection", (socket) => {
         console.log(`Socket ${socket.id} joined room ${room}`);
         socket.join(room);
     });
-    
     // Listen for typing data from the client-side
     socket.on("typingData", (data) => {
         console.log(`Socket ${socket.id} sent typing data: ${data}`);
-        const { username, typingData } = data;
+        const { room, words } = data;
+        console.log(words);
         // Broadcast the typing data to all clients in the same room
-        socket.to(username).emit("updateTypingData", typingData);
+        io.to(room).emit("updateTypingData", words);
+        socket.to(room).emit("updateTypingData", words);
     });
+    
 
 // Listen for progress updates from the client-side
     // socket.on("progressUpdate", (data) => {
@@ -207,11 +215,12 @@ app.get("/api/progress/:room_id", async (req, res) => {
     
     try {
         const { room_id } = req.params;
-        const sqlQuery = "SELECT * FROM progress WHERE room_id = ?";
+        const sqlQuery = "SELECT username,progress FROM progress WHERE room_id = ?";
         db.query(sqlQuery, [room_id], (err, result) => {
             if (err) {
                 res.status(500).json({ error: "Error in getting progress" });
             } else {
+                console.log(result);
                 res.status(200).json({ data: result });
             }
         });
@@ -219,16 +228,17 @@ app.get("/api/progress/:room_id", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 })
+
 app.post("/api/progress", async (req, res) => {
-    const { progress, email, room } = req.body;
+    const { progress, email, room, username } = req.body;
     const sqlQuery = "select * from progress where email = ? and room_id = ?";
     db.query(sqlQuery,[email,room],(err,result)=>{
         if(err){
             res.status(500).json({error:"error in getting progress"});
         }else{
             if(result.length>0){
-                const sqlQuery = "update progress set progress = ? where email = ? and room_id = ?";
-                db.query(sqlQuery,[progress,email,room],(err,result)=>{
+                const sqlQuery = "update progress set progress = ?,username = ? where email = ? and room_id = ?";
+                db.query(sqlQuery,[progress,username,email,room],(err,result)=>{
                     if(err){
                         res.status(500).json({error:"error in updating progress"});
                     }else{
@@ -257,6 +267,7 @@ app.get("/api/deleteroom/:room_id", async (req, res) => {
             if (err) {
                 res.status(500).json({ error: "Error in deleting progress" });
             } else {
+                console.log(result);
                 res.status(200).json({ data: result });
             }
         });
