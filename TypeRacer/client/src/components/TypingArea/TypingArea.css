@@ -3,16 +3,20 @@
     padding: 0px;
     margin: 0px;
 }
+.TypingArea{
+  position: relative;
+  margin-top: 80px;
+}
 .words {
   display: flex;
   flex-wrap: wrap;
   margin: 20px;
+  font-size: 26px;
 }
 
 .words span {
   margin: 5px;
-  padding: 5px;
-  border-radius: 5px;
+  border-radius: 1px;
 }
 
 .words span.correct {

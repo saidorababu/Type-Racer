@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
 import { useState, setUserData } from "react";
+import {useNavigate} from 'react-router-dom'
 import './SignUp.css'
 const initialState = {
     username:'',
@@ -13,7 +14,7 @@ const initialState = {
 function SignUp(){
     const [userData, setUserData] = useState(initialState);
     const [formErrors,setFormErrors] =useState({errorUserName:'',errorEmail:'',errorPassword:'',errorDob:'',errorGender:'',errorPlace:''});
-    
+    const navigate = useNavigate();
     const handleUserNameChange = (event)=>{
         setUserData({...userData,username:event.target.value})
         if(userData.username !== ''){
@@ -45,8 +46,9 @@ function SignUp(){
         setFormErrors({...formErrors,errorPlace:''});
       }
     }
-    const redirectToSignUpPage = (event) => {
-      console.log(userData);
+    
+    const redirectToLoginPage = () => {
+      navigate("/");
     }
     const handleFormSubmission = (event)=>{
       event.preventDefault();
@@ -79,6 +81,7 @@ function SignUp(){
       const response = await fetch(url,options);
       const data = await response.json();
       console.log(data);
+      redirectToLoginPage();
     }
     const validateInput = (userData) => {
         const {username,email, password, dateofbirth, gender, place} = userData;
@@ -116,7 +119,7 @@ function SignUp(){
             </div>
             <form className="signUpForm" onSubmit={handleFormSubmission}>
               <div className="inputContainer">
-                <label className="Inputlabel" htmlFor="UsernameInput">Email</label>
+                <label className="Inputlabel" htmlFor="UsernameInput">username</label>
                 <input  type = "text" className="Input" id ="UsernameInput" placeholder="Enter email..." onChange={handleUserNameChange} />
                 <p className="required">{formErrors.errorUserName}</p>
               </div>
@@ -140,8 +143,12 @@ function SignUp(){
                 <input  type = "text" className="Input" id ="PlaceInput" placeholder="Enter Place..." onChange={handlePlaceChange} />
                 <p className="required">{formErrors.errorPlace}</p>
               </div>
-              <button className="signUpButton" type="submit">SignUp</button>
-            </form>
+              <div className="bottomContainer">
+                <button className="signUpButton" type="submit">SignUp</button>
+                <p className="orText">Or</p>
+                <button className="loginButton" onClick={redirectToLoginPage}>Login</button>
+              </div>
+              </form>
           </div>
         </div>
     );

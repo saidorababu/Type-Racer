@@ -10,12 +10,15 @@ function App() {
   const handleLogin = (data)=>{
     setUserData({username:data.username,email:data.email,token:data.token,isAuthenticated:true});
   };
+  const handleLogout = ()=>{
+    setUserData({isAuthenticated:false});
+  }
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={userData.isAuthenticated?<Navigate to="/home" />:<Login onLogin={handleLogin} />}/>
         <Route path="/signup" exact element={<SignUp  />}/>
-        <Route path="/home" element={userData.isAuthenticated?<Home username={userData.username} email = {userData.email} />:<Navigate to="/" />} />
+        <Route path="/home" element={userData.isAuthenticated?<Home username={userData.username} email = {userData.email} handleLogout={handleLogout} />:<Navigate to="/" />} />
         <Route path="/profile" element ={1?<Profile username={userData.username} email = {userData.email} />:<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

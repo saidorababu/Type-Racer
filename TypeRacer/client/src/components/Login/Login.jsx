@@ -33,6 +33,10 @@ function Login(props){
       setFormErrors({...formErrors,errorEmail:e1,errorPassword:e2});
       if(!e1 && !e2){
         const response = await fetchTheLoginApi(email,password);
+        console.log(formErrors)
+        if(response === 0){
+          return;
+        }
         const token = response.token
         const username = response.user.username;
         props.onLogin({email,username,token});
@@ -67,6 +71,16 @@ function Login(props){
       }
       const response = await fetch(url,options);
       const jsonData = await response.json();
+      console.log(jsonData);
+      if(jsonData.error){
+        if(jsonData.error === 'user not found'){
+          setFormErrors({...formErrors,errorEmail:jsonData.error});
+        }
+        else if(jsonData.error === 'invalid password'){
+          setFormErrors({...formErrors,errorPassword:jsonData.error});
+        }
+        return 0;
+      }
       return jsonData;
     }
     return (

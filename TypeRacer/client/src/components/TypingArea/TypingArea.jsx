@@ -2,11 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "./TypingArea.css";
 
-function TypingArea({ words }) {
+function TypingArea({ words , setProgress}) {
   const [input, setInput] = useState("");
   const [index, setIndex] = useState(0);
   const [timer, setTimer] = useState(0);
-  const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
   const inputRef = useRef(null);
 
@@ -31,7 +30,7 @@ function TypingArea({ words }) {
       setFinished(true);
       // Send the score to the backend
       axios
-        .post("/api/scores", { score })
+        .post("/api/scores", { score: Math.round((index / timer) * 60) })
         .then((response) => {
           console.log(response.data);
         })
@@ -39,7 +38,10 @@ function TypingArea({ words }) {
           console.log(error.message);
         });
     }
-  }, [index, words, score]);
+    
+    const progress = Math.round(((index) / words.length) * 100);
+    setProgress(progress);
+  }, [index, words,timer, setProgress]);
 
   const handleChange = (e) => {
     // Handle the input change
@@ -49,8 +51,6 @@ function TypingArea({ words }) {
     if (value === words[index]) {
       // Increment the index and the score
       setIndex((index) => index + 1);
-      setScore((score) => score + 1);
-      // Clear the input field
       setInput("");
     }
   };
@@ -83,12 +83,11 @@ function TypingArea({ words }) {
         disabled={finished}
       />
       <div className="stats">
-        <p>Time: {timer} s</p>
-        <p>Score: {score}</p>
-        <p>WPM: {finished ? Math.round((score / timer) * 60) : 0}</p>
+        <p>WPM: {Math.round((index / timer) * 60)}</p>
       </div>
     </div>
   );
 }
 
 export default TypingArea;
+
