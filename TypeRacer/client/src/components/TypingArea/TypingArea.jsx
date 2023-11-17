@@ -20,9 +20,13 @@ function TypingArea({ words , setProgress}) {
       const interval = setInterval(() => {
         setTimer((timer) => timer + 1);
       }, 1000);
+      if(finished){
+        clearInterval(interval);
+        alert("YOU WON");
+      }
       return () => clearInterval(interval);
     }
-  }, [index]);
+  }, [index,finished]);
 
   useEffect(() => {
     // Check if all words are typed

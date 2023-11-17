@@ -46,17 +46,16 @@ useEffect(() => {
         setRoom(room);
         socket.emit("joinRoom", room);
         socket.on("updateTypingData",(words1) => {
-            console.log(123);
             console.log(words1);
             setWords(words1);
         });
-        
     };
-    
     const handleJoinRoom = () => {
         const room = parseInt(prompt("Enter room ID"));
-        joinRoom(room);
-        setIsJoined(true);
+        if(room) {
+            joinRoom(room);
+            setIsJoined(true);
+        }
     };
     const handleCreateRoom = () => {
         const room = parseInt(Math.floor(Math.random() * 1000000));
@@ -80,7 +79,7 @@ useEffect(() => {
         <div className="homePage">
             <div className="navbar" >
                 <div className="headingContainer">
-                    <img className="websiteIcon" alt="website icon" src='' />
+                    {/* <img className="websiteIcon" alt="website icon" src='' /> */}
                     <h1 className="mainHeading">Type Racer</h1>
                 </div>
                 <div className="navLeft">
@@ -104,6 +103,7 @@ useEffect(() => {
                 <div className="joinRoomContainer">
                     <button className="joinRoom-btn" onClick={handleCreateRoom}>Create Race</button>
                 </div>
+                <p className="orText"> or </p>
                 <div className="joinRoomContainer">
                     <button className="joinRoom-btn" onClick={handleJoinRoom}>Join Race</button>
                 </div>

@@ -1,5 +1,5 @@
 .typingTestPage{
-    margin: 120px 20px;
+    margin: 100px 20px;
     background-color: white;
     border-radius: 10px;
     padding: 20px;
@@ -24,7 +24,6 @@
 } */
 .progress-bar {
     width: 97%;
-    height: 36px;
     background-color: #f0ecec;
     border-radius: 10px;
     margin: 20px;

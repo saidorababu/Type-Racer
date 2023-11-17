@@ -7,11 +7,8 @@ import jwt from 'jsonwebtoken'
 import mysql from 'mysql'
 import multer from 'multer'
 import path from 'path'
-
 import { Server } from 'socket.io'
 
-// import WebSocket from "ws";
-// const wss = new WebSocket.Server({ port: 8080 });
 
 dotenv.config()
 
@@ -22,11 +19,9 @@ app.use(bodyParser.urlencoded({
 }))
 
 app.use(cors({
-    origin:["http://localhost:3000","http://10.2.64.224:3000","http://10.2.65.52:3000",],
+    origin:["http://localhost:3000","http://10.2.64.224:3000"],
     credentials:true
 }))
-
-
 
 const PORT = process.env.PORT || 4000
 

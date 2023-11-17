@@ -3,6 +3,7 @@ import React from "react";
 import { useState } from "react";
 import {useNavigate} from 'react-router-dom'
 import './Login.css'
+import { axios } from 'axios';
 
 function Login(props){
     const [email, setEmail] = useState('');
@@ -100,9 +101,10 @@ function Login(props){
                 <input  type = "text" className="passwordInput" id ="PasswordInput" placeholder="Enter password..." onChange={handlePasswordChange} />
                 <p className="required">{formErrors.errorPassword}</p>
               </div>
+
               <button className="loginButton" type="submit">Login</button>
-              <p className="orText">Or</p>
-              <button className="signUpButton" type="button" onClick={redirectToSignUpPage} >Create a Type Racer Account</button>
+              <p className="or">Or</p>
+              <button className="signUpButton" type="button" onClick={redirectToSignUpPage} >Create Your Type Racer Account</button>
             </form>
           </div>
         </div>
